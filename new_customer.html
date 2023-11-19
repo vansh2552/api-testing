@@ -1,0 +1,103 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Details</title>
+    <link rel="stylesheet" href="styles/new_customer.css">
+</head>
+<body>
+
+    <h1>Customer Details</h1>
+
+    <form id="customerForm">
+        <table>
+            <tr>
+                <th colspan="4">Customer Details</th>
+            </tr>
+            <tr>
+                <td>First Name</td>
+                <td>Last Name</td>
+
+            </tr>
+            <tr>
+                <td><input type="text" id="firstName" required></td>
+                <td><input type="text" id="lastName" required></td>
+
+            </tr>
+            <tr>
+
+                <td>Street Address</td>
+                <td>Address</td>
+            </tr>
+            <tr>
+
+                <td><input type="text" id="street" ></td>
+                <td><input type="text" id="address" ></td>
+            </tr>
+            <tr>
+                <td>City</td>
+                <td>State</td>
+
+            </tr>
+            <tr>
+                <td><input type="text" id="city" ></td>
+                <td><input type="text" id="state" ></td>
+
+            </tr>
+            <tr>
+                <td>Email</td>
+                <td>Phone Number</td>
+            </tr>
+            <tr>
+                <td><input type="email" id="email" ></td>
+                <td><input type="tel" id="phoneNumber" ></td>
+            </tr>
+        </table>
+
+        <button type="button" onclick="addCustomer()">Submit</button>
+    </form>
+
+    <script >
+        var token = localStorage.getItem('token');
+        function addCustomer(){
+            api="https://corsproxy.io/?https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp"
+
+            customer_body={
+                "first_name" : document.getElementById("firstName").value,
+                "last_name" : document.getElementById("lastName").value,
+                "street" : document.getElementById("street").value,
+                "address" : document.getElementById("address").value,
+                "street" : document.getElementById("street").value,
+                "city" : document.getElementById("city").value,
+                "state" : document.getElementById("state").value,
+                "email" : document.getElementById("email").value,
+                "phone" : document.getElementById("phoneNumber").value,
+            }
+            const params = {
+                'cmd': 'create',
+            };
+            const queryString = Object.keys(params).map(key => key + '=' + params[key]).join('&');
+            const urlWithParams = api + '?' + queryString;
+
+            fetch(urlWithParams,{
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(customer_body)
+            })
+            .then(res=> {
+                alert("Entry created");
+                window.location.href = 'customer.html';
+            })
+        }
+
+        
+
+
+
+    </script>
+</body>
+</html>

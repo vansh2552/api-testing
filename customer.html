@@ -1,0 +1,167 @@
+<!-- index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="styles/customer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div class="button-container">
+        <button class="add-customer-button" onclick="loginScreen()">Login screen</button>
+        <button class="add-customer-button" onclick="addCustomer()">Add Customer</button>
+        <h2>Customer List</h2>
+        
+    </div>
+    <!-- <div class="button-container">
+        
+    </div> -->
+
+<hr>
+ <div id="userTableContainer"></div>
+
+
+<script>
+    // Retrieve the token from localStorage
+    var token = localStorage.getItem('token');
+    var res;
+
+    var API = "https://corsproxy.io/?https%3A%2F%2Fqa2.sunbasedata.com%2Fsunbase%2Fportal%2Fapi%2Fassignment.jsp?cmd=get_customer_list";
+    console.log('Bearer ' + token);
+    fetch(API, {
+        method: 'GET',
+        params: {
+            'cmd': 'get_customer_list'
+        },
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+
+         const tableContainer = document.getElementById('userTableContainer');
+         tableContainer.innerHTML = ''; // Clear previous content
+
+                    // Create a table element
+        const table = document.createElement('table');
+        table.classList.add('user-table');
+
+        // Create the table header
+        const headerRow = document.createElement('tr');
+        headerRow.innerHTML = '<th>User ID</th> <th>First Name</th> <th>Last Name</th> <th>street</th> <th>address</th> <th>city</th> <th>state</th> <th>email</th> <th>phone</th> <th>Actions</th>';
+        table.appendChild(headerRow);
+
+        data.forEach(user => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${user.uuid}</td>
+                            <td>${user.first_name}</td>
+                            <td>${user.last_name}</td>
+                            <td>${user.street}</td>
+                            <td>${user.address}</td>
+                            <td>${user.city}</td>
+                            <td>${user.state}</td>
+                            <td>${user.email}</td>
+                            <td>${user.phone}</td>
+                            <td>
+                                <div class="edit-button" onclick="editUser('${user.uuid}', '${user.first_name}' , '${user.last_name}','${user.street}','${user.address}','${user.city}','${user.state}', '${user.email}','${user.phone}')">
+                                    <i class="fa fa-pencil"></i><!-- Pencil icon -->
+                                </div>                             
+                                <div class="delete-button" onclick="deleteUser('${user.uuid}')">
+                                    <div class="delete-icon"></div>
+                                </div>
+                            </td>
+                        `;
+                        table.appendChild(row);
+                    });
+
+                    // Append the table to the container
+                    tableContainer.appendChild(table);
+
+         
+         
+        
+    })
+    .catch(error => {
+        console.error('Error during authentication:', error);
+        
+    });
+    function addCustomer(){
+        window.location.href = 'new_customer.html';
+    }
+    function loginScreen(){
+        window.location.href = 'index.html';
+    }
+
+    function editUser(uuid,first_name,last_name,street,address,city,state,email,phone){
+        const api = "https://corsproxy.io/?https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp";
+        request_body={
+            "first_name": first_name,
+            "last_name": last_name,
+            "street": street,
+            "address": address,
+            "city": city,
+            "state": state,
+            "email": email,
+            "phone": phone
+        }
+        const params = {
+            'cmd': 'delete',
+            'uuid': uuid
+        };
+        const queryString = Object.keys(params).map(key => key + '=' + params[key]).join('&');
+        const urlWithParams = api + '?' + queryString;
+
+        fetch(urlWithParams,{
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify(request_body)
+
+        })
+        .then(res=>console.log(res))
+
+    }
+
+    function deleteUser(uuid) {
+       
+        const api = "https://corsproxy.io/?https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp";
+
+        const params = {
+            'cmd': 'delete',
+            'uuid': uuid
+        };
+
+        const queryString = Object.keys(params).map(key => key + '=' + params[key]).join('&');
+        const urlWithParams = api + '?' + queryString;
+
+        fetch(urlWithParams, {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        })
+        .then(response => location.reload())
+        // .then(data => {
+        //     // Log the keys of the response body
+        //     console.log(Object.keys(data));
+        // })
+ 
+    }
+
+
+
+    
+</script>
+
+    
+
+</body>
+</html>
